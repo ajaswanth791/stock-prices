@@ -21,7 +21,9 @@ from textblob import TextBlob
 from xgboost import XGBRegressor
 import redis
 
-redis_conn = redis.StrictRedis(host="localhost",port=6379)
+conn_string = "redis://red-ct29n4q3esus73d65do0:6379"
+
+redis_conn = redis.StrictRedis.from_url(conn_string, decode_responses=True)
 
 app = Flask(__name__, static_folder="static")
 app.secret_key = "your_secret_key"
