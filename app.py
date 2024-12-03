@@ -21,10 +21,9 @@ from textblob import TextBlob
 from xgboost import XGBRegressor
 import redis
 
-conn_string = "redis://red-ct29n4q3esus73d65do0:6379"
+conn_string = "rediss://red-ct661hjqf0us738c7d40:rQbpXxjk8Qy9cIparUVrmO4bquQdPP97@oregon-redis.render.com:6379"
 
 redis_conn = redis.StrictRedis.from_url(conn_string, decode_responses=True)
-
 app = Flask(__name__, static_folder="static")
 app.secret_key = "your_secret_key"
 
@@ -374,7 +373,7 @@ def get_status(ticker, response, company_dict, price):
 def add_price():
     try:
         #price = None,response = [], page = 1
-        print("The redis_conn is ", redis_conn.ping())
+        # print("The redis_conn is ", redis_conn.ping())
         page = int(request.args.get("page", 1))
         response = request.args.get("response", None)
         price = float(request.args.get("price", 0))
@@ -397,9 +396,9 @@ def add_price():
                     }
 
                 concurrent.futures.as_completed(futures)
-                print("the length is ", len(response))
-                res = redis_conn.set(str(price),json.dumps(response), ex = 86400)
-                print("res is ", res)
+                # print("the length is ", len(response))
+                redis_conn.set(str(price),json.dumps(response), ex = 86400)
+                # print("res is ", res)
 
             response = json.loads(redis_conn.get(str(price)))
 
@@ -423,13 +422,13 @@ def add_price():
                     }
 
                 concurrent.futures.as_completed(futures)
-                res = redis_conn.set(str(float(price)),json.dumps(response), ex = 86400)
-                print("resdis res ", res)
+                redis_conn.set(str(float(price)),json.dumps(response), ex = 86400)
+                # print("resdis res ", res)
             
             response = json.loads(redis_conn.get(str(float(price))))
-        print("response ", response , price)
+        # print("response ", response , price)
         if response:
-            print("nddd ", len(response))
+            # print("nddd ", len(response))
             return render_template(
                 "stocksDisplay.html",
                 value=price,
